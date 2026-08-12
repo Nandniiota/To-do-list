@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Todo Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='dashboard.css') }}">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- ================================================= -->
+    <!-- TOP HEADER -->
+    <!-- ================================================= -->
+
+    <header class="top-header">
+
+        <div class="welcome">
+
+            <h1>
+                Welcome back, Nandni! <span>👋</span>
+            </h1>
+
+            <p>
+                Here's what's happening with your tasks today.
+            </p>
+
+        </div>
+
+
+        <button
+            class="add-task-button"
+            onclick="openAddModal()">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Add Task
+
+        </button>
+
+    </header>
+
+
+
+    <!-- ================================================= -->
+    <!-- STATISTICS -->
+    <!-- ================================================= -->
+
+    {% set all_tasks =
+        today_tasks
+        + pending_tasks
+        + overdue_tasks
+        + completed_tasks
+    %}
+
+
+    {% set total_count = all_tasks|length %}
+
+    {% set pending_count = pending_tasks|length + overdue_tasks|length %}
+
+    {% set completed_count = completed_tasks|length %}
+
+
+    {% set high_count = namespace(value=0) %}
+
+    {% for task in all_tasks %}
+
+        {% if task.priority == "high" %}
+
+            {% set high_count.value = high_count.value + 1 %}
+
+        {% endif %}
+
+    {% endfor %}
+
+
+
+    <section class="stats-grid">
+
+
+        <!-- TOTAL -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon total-icon">
+
+                <i class="fa-solid fa-list-check"></i>
+
+            </div>
+
+            <div class="stat-info">
+
+                <span>Total Tasks</span>
+
+                <strong>{{ total_count }}</strong>
+
+                <small>All your tasks</small>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- PENDING -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon pending-icon">
+
+                <i class="fa-regular fa-clock"></i>
+
+            </div>
+
+            <div class="stat-info">
+
+                <span>Pending</span>
+
+                <strong>{{ pending_count }}</strong>
+
+                <small>Tasks to do</small>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- COMPLETED -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon completed-icon">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+            </div>
+
+            <div class="stat-info">
+
+                <span>Completed</span>
+
+                <strong>{{ completed_count }}</strong>
+
+                <small>Tasks done</small>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- HIGH PRIORITY -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon high-icon">
+
+                <i class="fa-solid fa-flag"></i>
+
+            </div>
+
+            <div class="stat-info">
+
+                <span>High Priority</span>
+
+                <strong>{{ high_count.value }}</strong>
+
+                <small>Important tasks</small>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- TASK PANEL -->
+    <!-- ================================================= -->
+
+    <section class="task-panel">
+
+
+        <!-- PANEL HEADER -->
+
+        <div class="panel-header">
+
+            <h2>My Tasks</h2>
+
+
+            <div class="task-tools">
+
+
+                <!-- SEARCH -->
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search tasks..."
+                        onkeyup="searchTasks()">
+
+                </div>
+
+
+                <!-- SORT -->
+
+                <select
+                    id="sortSelect"
+                    onchange="sortTasks()">
+
+                    <option value="latest">
+                        Sort: Latest
+                    </option>
+
+                    <option value="oldest">
+                        Sort: Oldest
+                    </option>
+
+                    <option value="priority">
+                        Sort: Priority
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- FILTER BUTTONS -->
+        <!-- ================================================= -->
+
+        <div class="filter-bar">
+
+            <button
+                class="filter-btn active"
+                onclick="filterTasks('all', this)">
+
+                All
+
+            </button>
+
+
+            <button
+                class="filter-btn"
+                onclick="filterTasks('pending', this)">
+
+                Pending
+
+            </button>
+
+
+            <button
+                class="filter-btn"
+                onclick="filterTasks('completed', this)">
+
+                Completed
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- TASK LIST -->
+        <!-- ================================================= -->
+
+        <div
+            class="task-list"
+            id="taskList">
+
+
+            <!-- ================================================= -->
+            <!-- TODAY TASKS -->
+            <!-- ================================================= -->
+
+            {% for task in today_tasks %}
+
+            <div
+                class="task-row"
+                data-status="pending"
+                data-title="{{ task.title|lower }}"
+                data-date="{{ task.due_date }}"
+                data-priority="{{ task.priority }}">
+
+
+                <a
+                    class="task-check"
+                    href="{{ url_for('complete_task', task_id=task.id) }}">
+
+                    <span></span>
+
+                </a>
+
+
+                <div class="task-name">
+
+                    {{ task.title }}
+
+                </div>
+
+
+                <div class="priority-badge {{ task.priority }}">
+
+                    {{ task.priority|capitalize }}
+
+                </div>
+
+
+                <div class="task-date">
+
+                    {{ task.due_date }}
+
+                </div>
+
+
+                <button
+                    class="icon-button edit"
+                    onclick="openEditModal(this)"
+                    data-id="{{ task.id }}"
+                    data-title="{{ task.title }}"
+                    data-date="{{ task.due_date.strftime('%Y-%m-%d') }}"
+                    data-priority="{{ task.priority }}">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+
+                <a
+                    class="icon-button delete"
+                    href="{{ url_for('delete_task', task_id=task.id) }}">
+
+                    <i class="fa-regular fa-trash-can"></i>
+
+                </a>
+
+
+            </div>
+
+            {% endfor %}
+
+
+
+            <!-- ================================================= -->
+            <!-- PENDING TASKS -->
+            <!-- ================================================= -->
+
+            {% for task in pending_tasks %}
+
+            <div
+                class="task-row"
+                data-status="pending"
+                data-title="{{ task.title|lower }}"
+                data-date="{{ task.due_date }}"
+                data-priority="{{ task.priority }}">
+
+
+                <a
+                    class="task-check"
+                    href="{{ url_for('complete_task', task_id=task.id) }}">
+
+                    <span></span>
+
+                </a>
+
+
+                <div class="task-name">
+
+                    {{ task.title }}
+
+                </div>
+
+
+                <div class="priority-badge {{ task.priority }}">
+
+                    {{ task.priority|capitalize }}
+
+                </div>
+
+
+                <div class="task-date">
+
+                    {{ task.due_date }}
+
+                </div>
+
+
+                <button
+                    class="icon-button edit"
+                    onclick="openEditModal(this)"
+                    data-id="{{ task.id }}"
+                    data-title="{{ task.title }}"
+                    data-date="{{ task.due_date.strftime('%Y-%m-%d') }}"
+                    data-priority="{{ task.priority }}">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+
+                <a
+                    class="icon-button delete"
+                    href="{{ url_for('delete_task', task_id=task.id) }}">
+
+                    <i class="fa-regular fa-trash-can"></i>
+
+                </a>
+
+
+            </div>
+
+            {% endfor %}
+
+
+
+            <!-- ================================================= -->
+            <!-- OVERDUE TASKS -->
+            <!-- ================================================= -->
+
+            {% for task in overdue_tasks %}
+
+            <div
+                class="task-row overdue-row"
+                data-status="pending"
+                data-title="{{ task.title|lower }}"
+                data-date="{{ task.due_date }}"
+                data-priority="{{ task.priority }}">
+
+
+                <a
+                    class="task-check"
+                    href="{{ url_for('complete_task', task_id=task.id) }}">
+
+                    <span></span>
+
+                </a>
+
+
+                <div class="task-name">
+
+                    {{ task.title }}
+
+                </div>
+
+
+                <div class="priority-badge {{ task.priority }}">
+
+                    {{ task.priority|capitalize }}
+
+                </div>
+
+
+                <div class="task-date overdue-date">
+
+                    {{ task.due_date }}
+
+                </div>
+
+
+                <button
+                    class="icon-button edit"
+                    onclick="openEditModal(this)"
+                    data-id="{{ task.id }}"
+                    data-title="{{ task.title }}"
+                    data-date="{{ task.due_date.strftime('%Y-%m-%d') }}"
+                    data-priority="{{ task.priority }}">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+
+                <a
+                    class="icon-button delete"
+                    href="{{ url_for('delete_task', task_id=task.id) }}">
+
+                    <i class="fa-regular fa-trash-can"></i>
+
+                </a>
+
+
+            </div>
+
+            {% endfor %}
+
+
+
+            <!-- ================================================= -->
+            <!-- COMPLETED TASKS -->
+            <!-- ================================================= -->
+
+            {% for task in completed_tasks %}
+
+            <div
+                class="task-row completed-row"
+                data-status="completed"
+                data-title="{{ task.title|lower }}"
+                data-date="{{ task.due_date }}"
+                data-priority="{{ task.priority }}">
+
+
+                <a
+                    class="task-check checked"
+                    href="{{ url_for('complete_task', task_id=task.id) }}">
+
+                    <i class="fa-solid fa-check"></i>
+
+                </a>
+
+
+                <div class="task-name completed-name">
+
+                    {{ task.title }}
+
+                </div>
+
+
+                <div class="priority-badge {{ task.priority }}">
+
+                    {{ task.priority|capitalize }}
+
+                </div>
+
+
+                <div class="task-date">
+
+                    {{ task.due_date }}
+
+                </div>
+
+
+                <button
+                    class="icon-button edit"
+                    onclick="openEditModal(this)"
+                    data-id="{{ task.id }}"
+                    data-title="{{ task.title }}"
+                    data-date="{{ task.due_date.strftime('%Y-%m-%d') }}"
+                    data-priority="{{ task.priority }}">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+
+                <a
+                    class="icon-button delete"
+                    href="{{ url_for('delete_task', task_id=task.id) }}">
+
+                    <i class="fa-regular fa-trash-can"></i>
+
+                </a>
+
+
+            </div>
+
+            {% endfor %}
+
+
+
+            <!-- EMPTY MESSAGE -->
+
+            <div
+                id="emptyMessage"
+                class="empty-message">
+
+                <i class="fa-regular fa-face-smile"></i>
+
+                <p>No tasks found.</p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- COMPLETED FOOTER -->
+        <!-- ================================================= -->
+
+        {% if completed_tasks %}
+
+        <button
+            class="completed-footer"
+            onclick="filterTasks('completed', document.querySelectorAll('.filter-btn')[2])">
+
+            View Completed ({{ completed_count }})
+
+            <i class="fa-solid fa-chevron-down"></i>
+
+        </button>
+
+        {% endif %}
+
+
+    </section>
+
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- ADD TASK MODAL -->
+<!-- ===================================================== -->
+
+<div
+    class="modal"
+    id="addModal">
+
+    <div class="modal-content">
+
+
+        <div class="modal-title">
+
+            <h2>Add Task</h2>
+
+            <button onclick="closeAddModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            action="{{ url_for('add_task') }}"
+            method="POST">
+
+
+            <label>
+                Task
+            </label>
+
+            <input
+                type="text"
+                name="title"
+                placeholder="Enter task name"
+                required>
+
+
+            <label>
+                Due Date
+            </label>
+
+            <input
+                type="date"
+                name="due_date"
+                required>
+
+
+            <label>
+                Priority
+            </label>
+
+            <select name="priority">
+
+                <option value="low">
+                    Low
+                </option>
+
+                <option value="medium" selected>
+                    Medium
+                </option>
+
+                <option value="high">
+                    High
+                </option>
+
+            </select>
+
+
+            <button
+                class="modal-submit"
+                type="submit">
+
+                Add Task
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- EDIT TASK MODAL -->
+<!-- ===================================================== -->
+
+<div
+    class="modal"
+    id="editModal">
+
+    <div class="modal-content">
+
+
+        <div class="modal-title">
+
+            <h2>Edit Task</h2>
+
+            <button onclick="closeEditModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="editForm"
+            method="POST">
+
+
+            <label>
+                Task
+            </label>
+
+            <input
+                id="editTitle"
+                type="text"
+                name="title"
+                required>
+
+
+            <label>
+                Due Date
+            </label>
+
+            <input
+                id="editDate"
+                type="date"
+                name="due_date"
+                required>
+
+
+            <label>
+                Priority
+            </label>
+
+            <select
+                id="editPriority"
+                name="priority">
+
+                <option value="low">
+                    Low
+                </option>
+
+                <option value="medium">
+                    Medium
+                </option>
+
+                <option value="high">
+                    High
+                </option>
+
+            </select>
+
+
+            <button
+                class="modal-submit"
+                type="submit">
+
+                Save Changes
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+
+// =====================================================
+// FILTER TASKS
+// =====================================================
+
+function filterTasks(status, button) {
+
+    const rows =
+        document.querySelectorAll(".task-row");
+
+    const buttons =
+        document.querySelectorAll(".filter-btn");
+
+
+    buttons.forEach(function(btn) {
+
+        btn.classList.remove("active");
+
+    });
+
+
+    if (button) {
+
+        button.classList.add("active");
+
+    }
+
+
+    let visibleCount = 0;
+
+
+    rows.forEach(function(row) {
+
+        if (status === "all") {
+
+            row.style.display = "grid";
+
+            visibleCount++;
+
+        }
+
+        else if (row.dataset.status === status) {
+
+            row.style.display = "grid";
+
+            visibleCount++;
+
+        }
+
+        else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+
+    document.getElementById("emptyMessage").style.display =
+        visibleCount === 0 ? "block" : "none";
+
+}
+
+
+
+// =====================================================
+// SEARCH
+// =====================================================
+
+function searchTasks() {
+
+    const search =
+        document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+
+    const rows =
+        document.querySelectorAll(".task-row");
+
+
+    let visibleCount = 0;
+
+
+    rows.forEach(function(row) {
+
+        const title =
+            row.dataset.title;
+
+
+        if (title.includes(search)) {
+
+            row.style.display = "grid";
+
+            visibleCount++;
+
+        }
+
+        else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+
+    document.getElementById("emptyMessage").style.display =
+        visibleCount === 0 ? "block" : "none";
+
+}
+
+
+
+// =====================================================
+// SORT
+// =====================================================
+
+function sortTasks() {
+
+    const select =
+        document.getElementById("sortSelect");
+
+    const value =
+        select.value;
+
+
+    const list =
+        document.getElementById("taskList");
+
+
+    const rows =
+        Array.from(
+            list.querySelectorAll(".task-row")
+        );
+
+
+    rows.sort(function(a, b) {
+
+
+        if (value === "latest") {
+
+            return b.dataset.date
+                .localeCompare(a.dataset.date);
+
+        }
+
+
+        if (value === "oldest") {
+
+            return a.dataset.date
+                .localeCompare(b.dataset.date);
+
+        }
+
+
+        if (value === "priority") {
+
+            const priorityOrder = {
+                high: 1,
+                medium: 2,
+                low: 3
+            };
+
+            return priorityOrder[a.dataset.priority]
+                - priorityOrder[b.dataset.priority];
+
+        }
+
+
+    });
+
+
+    rows.forEach(function(row) {
+
+        list.appendChild(row);
+
+    });
+
+}
+
+
+
+// =====================================================
+// ADD MODAL
+// =====================================================
+
+function openAddModal() {
+
+    document
+        .getElementById("addModal")
+        .style.display = "flex";
+
+}
+
+
+function closeAddModal() {
+
+    document
+        .getElementById("addModal")
+        .style.display = "none";
+
+}
+
+
+
+// =====================================================
+// EDIT MODAL
+// =====================================================
+
+function openEditModal(button) {
+
+    const id =
+        button.dataset.id;
+
+
+    const title =
+        button.dataset.title;
+
+
+    const taskDate =
+        button.dataset.date;
+
+
+    const priority =
+        button.dataset.priority;
+
+
+    document
+        .getElementById("editTitle")
+        .value = title;
+
+
+    document
+        .getElementById("editDate")
+        .value = taskDate;
+
+
+    document
+        .getElementById("editPriority")
+        .value = priority;
+
+
+    document
+        .getElementById("editForm")
+        .action = "/edit/" + id;
+
+
+    document
+        .getElementById("editModal")
+        .style.display = "flex";
+
+}
+
+
+function closeEditModal() {
+
+    document
+        .getElementById("editModal")
+        .style.display = "none";
+
+}
+
+
+
+// =====================================================
+// CLOSE MODALS
+// =====================================================
+
+window.onclick = function(event) {
+
+    const addModal =
+        document.getElementById("addModal");
+
+
+    const editModal =
+        document.getElementById("editModal");
+
+
+    if (event.target === addModal) {
+
+        closeAddModal();
+
+    }
+
+
+    if (event.target === editModal) {
+
+        closeEditModal();
+
+    }
+
+};
+
+
+</script>
+
+
+</body>
+
+</html>
