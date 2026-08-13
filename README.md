@@ -37,3 +37,13 @@
 ![alt text](https://github.com/Nandniiota/To-do-list/blob/main/To-do%20list/Screenshot%202026-08-13%20095756.png)
 
 ![alt text](https://github.com/Nandniiota/To-do-list/blob/main/To-do%20list/Screenshot%202026-08-13%20095819.png)
+
+
+                     Database connection with project using python & flask (Database connection pics)
+![alt text](https://github.com/Nandniiota/To-do-list/blob/main/To-do%20list/Screenshot%202026-08-13%20102156.png)
+
+
+![alt text](https://github.com/Nandniiota/To-do-list/blob/main/To-do%20list/Screenshot%202026-08-13%20102218.png)
+ 
+                           storage of data in actual database
+![alt text](https://github.com/Nandniiota/To-do-list/blob/main/To-do%20list/Screenshot%202026-08-13%20102317.png)
