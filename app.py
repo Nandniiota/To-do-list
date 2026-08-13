@@ -5,10 +5,6 @@ from datetime import date, datetime
 app = Flask(__name__)
 
 
-# =========================================================
-# DATABASE CONNECTION
-# =========================================================
-
 def get_db():
 
     connection_string = (
@@ -22,22 +18,14 @@ def get_db():
     return pyodbc.connect(connection_string)
 
 
-# =========================================================
-# GET ALL TASKS
-# =========================================================
-
-def get_tasks():
+@app.route("/")
+def index():
 
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT
-            id,
-            title,
-            due_date,
-            priority,
-            completed
+        SELECT id, title, due_date, priority, completed
         FROM Tasks
         ORDER BY due_date ASC
     """)
@@ -45,18 +33,6 @@ def get_tasks():
     tasks = cursor.fetchall()
 
     conn.close()
-
-    return tasks
-
-
-# =========================================================
-# ORIGINAL TODO LIST
-# =========================================================
-
-@app.route("/")
-def index():
-
-    tasks = get_tasks()
 
     today = date.today()
 
@@ -73,28 +49,21 @@ def index():
         if isinstance(due_date, datetime):
             due_date = due_date.date()
 
-        # Completed
+        # Completed tasks
         if task.completed:
-
             completed_tasks.append(task)
 
-        # Not completed
-        else:
+        # Today's tasks
+        elif due_date == today:
+            today_tasks.append(task)
 
-            # Due today
-            if due_date == today:
+        # Future tasks
+        elif due_date > today:
+            pending_tasks.append(task)
 
-                today_tasks.append(task)
-
-            # Future task
-            elif due_date is not None and due_date > today:
-
-                pending_tasks.append(task)
-
-            # Overdue
-            elif due_date is not None and due_date < today:
-
-                overdue_tasks.append(task)
+        # Overdue tasks
+        elif due_date < today:
+            overdue_tasks.append(task)
 
     return render_template(
         "index.html",
@@ -104,58 +73,6 @@ def index():
         completed_tasks=completed_tasks
     )
 
-
-# =========================================================
-# NEW DASHBOARD
-# =========================================================
-
-@app.route("/dashboard")
-def dashboard():
-
-    tasks = get_tasks()
-
-    # Total
-    total_tasks = len(tasks)
-
-    # Completed
-    completed_tasks = []
-
-    # Pending
-    pending_tasks = []
-
-    # High priority
-    high_priority_tasks = []
-
-    for task in tasks:
-
-        # Completed
-        if task.completed:
-
-            completed_tasks.append(task)
-
-        else:
-
-            pending_tasks.append(task)
-
-            # High priority
-            if str(task.priority).lower() == "high":
-
-                high_priority_tasks.append(task)
-
-    return render_template(
-        "dashboard.html",
-        tasks=tasks,
-        total_tasks=total_tasks,
-        completed_tasks=completed_tasks,
-        pending_tasks=pending_tasks,
-        high_priority_tasks=high_priority_tasks
-    )
-
-
-# =========================================================
-# ADD TASK
-# =========================================================
-
 @app.route("/add", methods=["POST"])
 def add_task():
 
@@ -163,22 +80,15 @@ def add_task():
     due_date = request.form.get("due_date")
     priority = request.form.get("priority")
 
-    # Check that all fields exist
     if not title or not due_date or not priority:
-
-        return redirect(request.referrer or url_for("index"))
+        return redirect(url_for("index"))
 
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
         INSERT INTO Tasks
-        (
-            title,
-            due_date,
-            priority,
-            completed
-        )
+        (title, due_date, priority, completed)
         VALUES (?, ?, ?, 0)
     """, (
         title,
@@ -189,13 +99,7 @@ def add_task():
     conn.commit()
     conn.close()
 
-    # Return to the page from which task was added
-    return redirect(request.referrer or url_for("index"))
-
-
-# =========================================================
-# COMPLETE / UNCOMPLETE TASK
-# =========================================================
+    return redirect(url_for("index"))
 
 @app.route("/complete/<int:task_id>")
 def complete_task(task_id):
@@ -216,13 +120,8 @@ def complete_task(task_id):
     conn.commit()
     conn.close()
 
-    # Return to previous page
-    return redirect(request.referrer or url_for("index"))
+    return redirect(url_for("index"))
 
-
-# =========================================================
-# DELETE TASK
-# =========================================================
 
 @app.route("/delete/<int:task_id>")
 def delete_task(task_id):
@@ -238,12 +137,8 @@ def delete_task(task_id):
     conn.commit()
     conn.close()
 
-    return redirect(request.referrer or url_for("index"))
+    return redirect(url_for("index"))
 
-
-# =========================================================
-# EDIT TASK
-# =========================================================
 
 @app.route("/edit/<int:task_id>", methods=["POST"])
 def edit_task(task_id):
@@ -253,8 +148,7 @@ def edit_task(task_id):
     priority = request.form.get("priority")
 
     if not title or not due_date or not priority:
-
-        return redirect(request.referrer or url_for("index"))
+        return redirect(url_for("index"))
 
     conn = get_db()
     cursor = conn.cursor()
@@ -276,13 +170,8 @@ def edit_task(task_id):
     conn.commit()
     conn.close()
 
-    return redirect(request.referrer or url_for("index"))
+    return redirect(url_for("index"))
 
-
-# =========================================================
-# RUN FLASK
-# =========================================================
 
 if __name__ == "__main__":
-
     app.run(debug=True)

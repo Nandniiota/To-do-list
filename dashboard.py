@@ -5,9 +5,6 @@ from datetime import date, datetime
 app = Flask(__name__)
 
 
-# =====================================================
-# DATABASE CONNECTION
-# =====================================================
 
 def get_db():
 
@@ -22,9 +19,6 @@ def get_db():
     return pyodbc.connect(connection_string)
 
 
-# =====================================================
-# DASHBOARD
-# =====================================================
 
 @app.route("/")
 def dashboard():
@@ -57,10 +51,7 @@ def dashboard():
     high_priority_tasks = []
 
 
-    # =================================================
-    # SEPARATE TASKS
-    # =================================================
-
+    
     for task in tasks:
 
         due_date = task.due_date
@@ -70,10 +61,7 @@ def dashboard():
             due_date = due_date.date()
 
 
-        # ---------------------------------------------
-        # COMPLETED
-        # ---------------------------------------------
-
+       
         if task.completed:
 
             completed_tasks.append(task)
@@ -81,45 +69,29 @@ def dashboard():
             continue
 
 
-        # ---------------------------------------------
-        # HIGH PRIORITY
-        # ---------------------------------------------
-
+       
         if str(task.priority).lower() == "high":
 
             high_priority_tasks.append(task)
 
 
-        # ---------------------------------------------
-        # TODAY
-        # ---------------------------------------------
-
+       
         if due_date == today:
 
             today_tasks.append(task)
 
 
-        # ---------------------------------------------
-        # PENDING
-        # ---------------------------------------------
-
+       
         elif due_date is not None and due_date > today:
 
             pending_tasks.append(task)
 
 
-        # ---------------------------------------------
-        # OVERDUE
-        # ---------------------------------------------
-
+      
         elif due_date is not None and due_date < today:
 
             overdue_tasks.append(task)
 
-
-    # =================================================
-    # STATISTICS
-    # =================================================
 
     total_tasks = len(tasks)
 
@@ -133,10 +105,6 @@ def dashboard():
 
     high_priority_count = len(high_priority_tasks)
 
-
-    # =================================================
-    # SEND EVERYTHING TO DASHBOARD.HTML
-    # =================================================
 
     return render_template(
         "dashboard.html",
@@ -160,10 +128,6 @@ def dashboard():
         high_priority_count=high_priority_count
     )
 
-
-# =====================================================
-# ADD TASK
-# =====================================================
 
 @app.route("/add", methods=["POST"])
 def add_task():
@@ -200,10 +164,6 @@ def add_task():
     return redirect(url_for("dashboard"))
 
 
-# =====================================================
-# COMPLETE / UNCOMPLETE
-# =====================================================
-
 @app.route("/complete/<int:task_id>")
 def complete_task(task_id):
 
@@ -226,10 +186,6 @@ def complete_task(task_id):
     return redirect(url_for("dashboard"))
 
 
-# =====================================================
-# DELETE
-# =====================================================
-
 @app.route("/delete/<int:task_id>")
 def delete_task(task_id):
 
@@ -246,10 +202,6 @@ def delete_task(task_id):
 
     return redirect(url_for("dashboard"))
 
-
-# =====================================================
-# EDIT
-# =====================================================
 
 @app.route("/edit/<int:task_id>", methods=["POST"])
 def edit_task(task_id):
@@ -284,10 +236,6 @@ def edit_task(task_id):
 
     return redirect(url_for("dashboard"))
 
-
-# =====================================================
-# RUN DASHBOARD
-# =====================================================
 
 if __name__ == "__main__":
 

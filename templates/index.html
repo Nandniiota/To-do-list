@@ -9,93 +9,73 @@
 
     <title>Todo App</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
 
 <body>
 
-<div class="app-container">
+    <div class="app-container">
 
-    <header class="header">
+        <header class="header">
 
-        <h1>My Todo List</h1>
+            <h1>My Todo List</h1>
 
-    <a href="http://127.0.0.1:5001/" class="dashboard-btn">
-        📊 Dashboard
-    </a>
+            <a href="http://127.0.0.1:5001/" class="dashboard-btn">
+                📊 Dashboard
+            </a>
 
-    </header>
+        </header>
 
-    <div class="tabs">
+        <div class="tabs">
 
-        <button
-            type="button"
-            class="tab active"
-            id="todayTab"
-            onclick="showTab('today')">
+            <button type="button" class="tab active" id="todayTab" onclick="showTab('today')">
 
-            Today
+                Today
 
-        </button>
+            </button>
 
 
-        <button
-            type="button"
-            class="tab"
-            id="pendingTab"
-            onclick="showTab('pending')">
+            <button type="button" class="tab" id="pendingTab" onclick="showTab('pending')">
 
-            Pending
+                Pending
 
-        </button>
+            </button>
 
 
-        <button
-            type="button"
-            class="tab"
-            id="overdueTab"
-            onclick="showTab('overdue')">
+            <button type="button" class="tab" id="overdueTab" onclick="showTab('overdue')">
 
-            Overdue
-
-        </button>
-
-    </div>
-
-    <main class="content">
-
-
-        <div class="task-header">
-
-            <h2>Tasks</h2>
-
-            <button
-                type="button"
-                class="add-btn"
-                onclick="openAddModal()">
-
-                + Add Task
+                Overdue
 
             </button>
 
         </div>
 
-        <section
-            id="today"
-            class="task-section active-section">
+        <main class="content">
 
-            {% if today_tasks %}
+
+            <div class="task-header">
+
+                <h2>Tasks</h2>
+
+                <button type="button" class="add-btn" onclick="openAddModal()">
+
+                    + Add Task
+
+                </button>
+
+            </div>
+
+            <section id="today" class="task-section active-section">
+
+                {% if today_tasks %}
 
                 {% for task in today_tasks %}
 
                 <div class="task-card">
 
-                    <a
-                        class="checkbox"
-                        href="{{ url_for('complete_task', task_id=task.id) }}">
+                    <a class="checkbox" href="{{ url_for('complete_task', task_id=task.id) }}">
                     </a>
 
 
@@ -113,15 +93,8 @@
                     </div>
 
 
-                    <button
-                        type="button"
-                        class="edit-btn"
-
-                        data-id="{{ task.id }}"
-                        data-title="{{ task.title }}"
-                        data-date="{{ task.due_date.strftime('%Y-%m-%d') }}"
-                        data-priority="{{ task.priority }}"
-
+                    <button type="button" class="edit-btn" data-id="{{ task.id }}" data-title="{{ task.title }}"
+                        data-date="{{ task.due_date.strftime('%Y-%m-%d') }}" data-priority="{{ task.priority }}"
                         onclick="openEditModal(this)">
 
                         ✎
@@ -129,9 +102,7 @@
                     </button>
 
 
-                    <a
-                        class="delete-btn"
-                        href="{{ url_for('delete_task', task_id=task.id) }}">
+                    <a class="delete-btn" href="{{ url_for('delete_task', task_id=task.id) }}">
 
                         <span class="priority {{ task.priority }}"></span>
 
@@ -141,7 +112,7 @@
 
                 {% endfor %}
 
-            {% else %}
+                {% else %}
 
                 <div class="empty">
 
@@ -149,23 +120,19 @@
 
                 </div>
 
-            {% endif %}
+                {% endif %}
 
-        </section>
+            </section>
 
-        <section
-            id="pending"
-            class="task-section">
+            <section id="pending" class="task-section">
 
-            {% if pending_tasks %}
+                {% if pending_tasks %}
 
                 {% for task in pending_tasks %}
 
                 <div class="task-card">
 
-                    <a
-                        class="checkbox"
-                        href="{{ url_for('complete_task', task_id=task.id) }}">
+                    <a class="checkbox" href="{{ url_for('complete_task', task_id=task.id) }}">
                     </a>
 
 
@@ -183,15 +150,8 @@
                     </div>
 
 
-                    <button
-                        type="button"
-                        class="edit-btn"
-
-                        data-id="{{ task.id }}"
-                        data-title="{{ task.title }}"
-                        data-date="{{ task.due_date.strftime('%Y-%m-%d') }}"
-                        data-priority="{{ task.priority }}"
-
+                    <button type="button" class="edit-btn" data-id="{{ task.id }}" data-title="{{ task.title }}"
+                        data-date="{{ task.due_date.strftime('%Y-%m-%d') }}" data-priority="{{ task.priority }}"
                         onclick="openEditModal(this)">
 
                         ✎
@@ -199,9 +159,7 @@
                     </button>
 
 
-                    <a
-                        class="delete-btn"
-                        href="{{ url_for('delete_task', task_id=task.id) }}">
+                    <a class="delete-btn" href="{{ url_for('delete_task', task_id=task.id) }}">
 
                         <span class="priority {{ task.priority }}"></span>
 
@@ -211,7 +169,7 @@
 
                 {% endfor %}
 
-            {% else %}
+                {% else %}
 
                 <div class="empty">
 
@@ -219,23 +177,19 @@
 
                 </div>
 
-            {% endif %}
+                {% endif %}
 
-        </section>
+            </section>
 
-        <section
-            id="overdue"
-            class="task-section">
+            <section id="overdue" class="task-section">
 
-            {% if overdue_tasks %}
+                {% if overdue_tasks %}
 
                 {% for task in overdue_tasks %}
 
                 <div class="task-card overdue-card">
 
-                    <a
-                        class="checkbox"
-                        href="{{ url_for('complete_task', task_id=task.id) }}">
+                    <a class="checkbox" href="{{ url_for('complete_task', task_id=task.id) }}">
                     </a>
 
 
@@ -253,15 +207,8 @@
                     </div>
 
 
-                    <button
-                        type="button"
-                        class="edit-btn"
-
-                        data-id="{{ task.id }}"
-                        data-title="{{ task.title }}"
-                        data-date="{{ task.due_date.strftime('%Y-%m-%d') }}"
-                        data-priority="{{ task.priority }}"
-
+                    <button type="button" class="edit-btn" data-id="{{ task.id }}" data-title="{{ task.title }}"
+                        data-date="{{ task.due_date.strftime('%Y-%m-%d') }}" data-priority="{{ task.priority }}"
                         onclick="openEditModal(this)">
 
                         ✎
@@ -269,9 +216,7 @@
                     </button>
 
 
-                    <a
-                        class="delete-btn"
-                        href="{{ url_for('delete_task', task_id=task.id) }}">
+                    <a class="delete-btn" href="{{ url_for('delete_task', task_id=task.id) }}">
 
                         <span class="priority {{ task.priority }}"></span>
 
@@ -281,7 +226,7 @@
 
                 {% endfor %}
 
-            {% else %}
+                {% else %}
 
                 <div class="empty">
 
@@ -289,358 +234,318 @@
 
                 </div>
 
-            {% endif %}
+                {% endif %}
 
-        </section>
+            </section>
 
-        {% if completed_tasks %}
+            {% if completed_tasks %}
 
-        <div class="completed-section">
+            <div class="completed-section">
 
-            <h3>Completed</h3>
+                <h3>Completed</h3>
 
-            <div class="completed-list">
+                <div class="completed-list">
 
-                {% for task in completed_tasks %}
+                    {% for task in completed_tasks %}
 
-                <div class="completed-task">
+                    <div class="completed-task">
 
-                    <a
-                        class="completed-checkbox"
-                        href="{{ url_for('complete_task', task_id=task.id) }}">
+                        <a class="completed-checkbox" href="{{ url_for('complete_task', task_id=task.id) }}">
 
-                        ✓
+                            ✓
 
-                    </a>
+                        </a>
 
 
-                    <span>
+                        <span>
 
-                        {{ task.title }}
+                            {{ task.title }}
 
-                    </span>
+                        </span>
 
 
-                    <a
-                        href="{{ url_for('delete_task', task_id=task.id) }}"
-                        class="remove-completed">
+                        <a href="{{ url_for('delete_task', task_id=task.id) }}" class="remove-completed">
 
-                        ×
+                            ×
 
-                    </a>
+                        </a>
+
+                    </div>
+
+                    {% endfor %}
 
                 </div>
 
-                {% endfor %}
+            </div>
+
+            {% endif %}
+
+
+        </main>
+
+    </div>
+
+    <div id="addModal" class="modal">
+
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+
+                <h2>Add Task</h2>
+
+                <button type="button" onclick="closeAddModal()">
+
+                    ×
+
+                </button>
 
             </div>
 
+
+            <form action="{{ url_for('add_task') }}" method="POST">
+
+
+                <label>Task</label>
+
+                <input type="text" name="title" placeholder="Enter task name" required>
+
+
+                <label>Due Date</label>
+
+                <input type="date" name="due_date" required>
+
+
+                <label>Priority</label>
+
+                <select name="priority">
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                    <option value="medium" selected>
+                        Medium
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                </select>
+
+
+                <button type="submit" class="save-btn">
+
+                    Add Task
+
+                </button>
+
+            </form>
+
         </div>
-
-        {% endif %}
-
-
-    </main>
-
-</div>
-
-<div
-    id="addModal"
-    class="modal">
-
-    <div class="modal-content">
-
-
-        <div class="modal-header">
-
-            <h2>Add Task</h2>
-
-            <button
-                type="button"
-                onclick="closeAddModal()">
-
-                ×
-
-            </button>
-
-        </div>
-
-
-        <form
-            action="{{ url_for('add_task') }}"
-            method="POST">
-
-
-            <label>Task</label>
-
-            <input
-                type="text"
-                name="title"
-                placeholder="Enter task name"
-                required>
-
-
-            <label>Due Date</label>
-
-            <input
-                type="date"
-                name="due_date"
-                required>
-
-
-            <label>Priority</label>
-
-            <select name="priority">
-
-                <option value="low">
-                    Low
-                </option>
-
-                <option value="medium" selected>
-                    Medium
-                </option>
-
-                <option value="high">
-                    High
-                </option>
-
-            </select>
-
-
-            <button
-                type="submit"
-                class="save-btn">
-
-                Add Task
-
-            </button>
-
-        </form>
 
     </div>
 
-</div>
+    <div id="editModal" class="modal">
 
-<div
-    id="editModal"
-    class="modal">
-
-    <div class="modal-content">
+        <div class="modal-content">
 
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2>Edit Task</h2>
+                <h2>Edit Task</h2>
 
-            <button
-                type="button"
-                onclick="closeEditModal()">
+                <button type="button" onclick="closeEditModal()">
 
-                ×
+                    ×
 
-            </button>
+                </button>
+
+            </div>
+
+
+            <form id="editForm" method="POST">
+
+
+                <label>Task</label>
+
+                <input id="editTitle" type="text" name="title" required>
+
+
+                <label>Due Date</label>
+
+                <input id="editDate" type="date" name="due_date" required>
+
+
+                <label>Priority</label>
+
+                <select id="editPriority" name="priority">
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                    <option value="medium">
+                        Medium
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                </select>
+
+
+                <button type="submit" class="save-btn">
+
+                    Save Changes
+
+                </button>
+
+            </form>
 
         </div>
 
-
-        <form
-            id="editForm"
-            method="POST">
-
-
-            <label>Task</label>
-
-            <input
-                id="editTitle"
-                type="text"
-                name="title"
-                required>
-
-
-            <label>Due Date</label>
-
-            <input
-                id="editDate"
-                type="date"
-                name="due_date"
-                required>
-
-
-            <label>Priority</label>
-
-            <select
-                id="editPriority"
-                name="priority">
-
-                <option value="low">
-                    Low
-                </option>
-
-                <option value="medium">
-                    Medium
-                </option>
-
-                <option value="high">
-                    High
-                </option>
-
-            </select>
-
-
-            <button
-                type="submit"
-                class="save-btn">
-
-                Save Changes
-
-            </button>
-
-        </form>
-
     </div>
 
-</div>
+    <script>
+        function showTab(tabName) {
 
-<script>
+            // Get all sections
+            const sections =
+                document.querySelectorAll(".task-section");
 
-function showTab(tabName) {
 
-    // Get all sections
-    const sections =
-        document.querySelectorAll(".task-section");
+            // Hide all sections
+            sections.forEach(function (section) {
 
+                section.style.display = "none";
 
-    // Hide all sections
-    sections.forEach(function(section) {
+            });
 
-        section.style.display = "none";
 
-    });
+            // Remove active from all tabs
+            const tabs =
+                document.querySelectorAll(".tab");
 
 
-    // Remove active from all tabs
-    const tabs =
-        document.querySelectorAll(".tab");
+            tabs.forEach(function (tab) {
 
+                tab.classList.remove("active");
 
-    tabs.forEach(function(tab) {
+            });
 
-        tab.classList.remove("active");
 
-    });
+            // Show selected section
+            const selectedSection =
+                document.getElementById(tabName);
 
 
-    // Show selected section
-    const selectedSection =
-        document.getElementById(tabName);
+            if (selectedSection) {
 
+                selectedSection.style.display = "block";
 
-    if (selectedSection) {
+            }
 
-        selectedSection.style.display = "block";
 
-    }
+            // Activate selected tab
+            const selectedTab =
+                document.getElementById(tabName + "Tab");
 
 
-    // Activate selected tab
-    const selectedTab =
-        document.getElementById(tabName + "Tab");
+            if (selectedTab) {
 
+                selectedTab.classList.add("active");
 
-    if (selectedTab) {
+            }
 
-        selectedTab.classList.add("active");
+        }
 
-    }
 
-}
+        function openAddModal() {
 
+            document.getElementById("addModal").style.display = "flex";
 
-function openAddModal() {
+        }
 
-    document.getElementById("addModal").style.display = "flex";
 
-}
+        function closeAddModal() {
 
+            document.getElementById("addModal").style.display = "none";
 
-function closeAddModal() {
+        }
 
-    document.getElementById("addModal").style.display = "none";
 
-}
+        function openEditModal(button) {
 
+            const id =
+                button.dataset.id;
 
-function openEditModal(button) {
+            const title =
+                button.dataset.title;
 
-    const id =
-        button.dataset.id;
+            const taskDate =
+                button.dataset.date;
 
-    const title =
-        button.dataset.title;
+            const priority =
+                button.dataset.priority;
 
-    const taskDate =
-        button.dataset.date;
 
-    const priority =
-        button.dataset.priority;
+            document.getElementById("editTitle").value =
+                title;
 
 
-    document.getElementById("editTitle").value =
-        title;
+            document.getElementById("editDate").value =
+                taskDate;
 
 
-    document.getElementById("editDate").value =
-        taskDate;
+            document.getElementById("editPriority").value =
+                priority;
 
 
-    document.getElementById("editPriority").value =
-        priority;
+            document.getElementById("editForm").action =
+                "/edit/" + id;
 
 
-    document.getElementById("editForm").action =
-        "/edit/" + id;
+            document.getElementById("editModal").style.display =
+                "flex";
 
+        }
 
-    document.getElementById("editModal").style.display =
-        "flex";
 
-}
+        function closeEditModal() {
 
+            document.getElementById("editModal").style.display =
+                "none";
 
-function closeEditModal() {
+        }
 
-    document.getElementById("editModal").style.display =
-        "none";
 
-}
+        window.onclick = function (event) {
 
+            const addModal =
+                document.getElementById("addModal");
 
-window.onclick = function(event) {
+            const editModal =
+                document.getElementById("editModal");
 
-    const addModal =
-        document.getElementById("addModal");
 
-    const editModal =
-        document.getElementById("editModal");
+            if (event.target === addModal) {
 
+                addModal.style.display = "none";
 
-    if (event.target === addModal) {
+            }
 
-        addModal.style.display = "none";
 
-    }
+            if (event.target === editModal) {
 
+                editModal.style.display = "none";
 
-    if (event.target === editModal) {
+            }
 
-        editModal.style.display = "none";
-
-    }
-
-};
-
-
-</script>
+        };
+    </script>
 
 
 </body>
